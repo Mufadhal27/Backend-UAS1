@@ -3,94 +3,114 @@ const db = require("../config/database");
 
 // membuat class Alumni
 class Alumni {
-  static all() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * from alumnis";
+  static async all() {
+    const query = "SELECT * from alumnis";
+    const results = await new Promise((resolve, reject) => {
       db.query(query, (err, results) => {
-        resolve(results);
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       });
     });
+    return results;
   }
 
-  static async create(data) {
-    // melakukan insert data ke database
-    const id = await new Promise((resolve, reject) => {
-      const sql = "INSERT INTO alumnis SET ?";
-      db.query(sql, data, (err, results) => {
-        resolve(results.insertId);
+  static async create(alumnisData) {
+    const query = "INSERT INTO alumnis SET ?";
+    const result = await new Promise((resolve, reject) => {
+      db.query(query, alumnisData, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       });
     });
-  
-    // melakukan query berdasarkan id
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM alumnis WHERE id = ?";
-      db.query(sql, id, (err, results) => {
-        resolve(results);
+
+    return {
+      id: result.insertId,
+      ...alumnisData,
+    };
+  }
+
+  static async find(id) {
+    const query = "SELECT * FROM alumnis WHERE id = ?";
+    const results = await new Promise((resolve, reject) => {
+      db.query(query, id, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       });
     });
+
+    const [alumnis] = results;
+    return alumnis;
   }
 
-  static find(id) {
-      return new Promise((resolve, reject) => {
-          const sql = "SELECT * FROM alumnis WHERE id = ?";
-          db.query(sql, id, (err, results) => {
-              // destructing array
-              const [alumni] = results;
-              resolve(alumni);
-          });
-      });
-  }
-
-  // mengupdate data alumni
   static async update(id, data) {
-      await new Promise((resolve, reject) => {
-          const sql = "UPDATE alumnis SET ? WHERE id = ?";
-          db.query(sql, [data, id], (err, results) => {
-              resolve(results);
-          });
-      });
-
-      // mencari data yang baru diupdate
-      const alumni = await this.find(id);
-      return alumni;
-  }
-
-
-  // menghapus data dari database
-  static delete(id) {
-      return new Promise((resolve, reject) => {
-          const sql = "DELETE FROM alumnis WHERE id = ?";
-          db.query(sql, id, (err, results) => {
-              resolve(results);
-          });
-      });
-  }
-
-  static search(name) {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM alumnis WHERE name LIKE ?";
-      db.query(sql, `%${name}%`, (err, results) => {
-        if (err) reject(err);
-        resolve(results);
+    const query = "UPDATE alumnis SET ? WHERE id = ?";
+    const result = await new Promise((resolve, reject) => {
+      db.query(query, [data, id], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       });
     });
+
+    // mencari data yang baru diupdate
+    const alumni = await this.find(id);
+    return alumni;
   }
 
-  static findByStatus(status) {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM alumnis WHERE status = ?";
-      db.query(sql, status, (err, results) => {
-        if (err) reject(err);
-        resolve(results);
+  static async delete(id) {
+    const query = "DELETE FROM alumnis WHERE id = ?";
+    const result = await new Promise((resolve, reject) => {
+      db.query(query, id, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
       });
     });
+
+    return result;
   }
 
-  static findFreshGraduate() {
+  static async search(name) {
+    const query = "SELECT * FROM alumnis WHERE name LIKE ?";
+    const results = await new Promise((resolve, reject) => {
+      db.query(query, `%${name}%`, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      });
+    });
+
+    return results;
+  }
+
+  static async findByStatus(status) {
+    const query = "SELECT * FROM alumnis WHERE status = ?";
+    const results = await new Promise((resolve, reject) => {
+      db.query(query, status, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      });
+    });
+
+    return results;
+  }
+
+  static async findFreshGraduate() {
     return this.findByStatus("fresh-graduate");
   }
 
-  static findEmployed() {
+  static async findEmployed() {
     return this.findByStatus("employed");
   }
 }
