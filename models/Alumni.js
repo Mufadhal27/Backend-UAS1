@@ -4,7 +4,7 @@ const db = require("../config/database");
 // membuat class Alumni
 class Alumni {
   static async all() {
-    const query = "SELECT * from alumnis";
+    const query = "SELECT * from alumni";
     const results = await new Promise((resolve, reject) => {
       db.query(query, (err, results) => {
         if (err) {
@@ -16,10 +16,10 @@ class Alumni {
     return results;
   }
 
-  static async create(alumnisData) {
-    const query = "INSERT INTO alumnis SET ?";
+  static async create(alumniData) {
+    const query = "INSERT INTO alumni SET ?";
     const result = await new Promise((resolve, reject) => {
-      db.query(query, alumnisData, (err, results) => {
+      db.query(query, alumniData, (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -29,12 +29,12 @@ class Alumni {
 
     return {
       id: result.insertId,
-      ...alumnisData,
+      ...alumniData,
     };
   }
 
   static async find(id) {
-    const query = "SELECT * FROM alumnis WHERE id = ?";
+    const query = "SELECT * FROM alumni WHERE id = ?";
     const results = await new Promise((resolve, reject) => {
       db.query(query, id, (err, results) => {
         if (err) {
@@ -44,12 +44,12 @@ class Alumni {
       });
     });
 
-    const [alumnis] = results;
-    return alumnis;
+    const [alumni] = results;
+    return alumni;
   }
 
   static async update(id, data) {
-    const query = "UPDATE alumnis SET ? WHERE id = ?";
+    const query = "UPDATE alumni SET ? WHERE id = ?";
     const result = await new Promise((resolve, reject) => {
       db.query(query, [data, id], (err, results) => {
         if (err) {
@@ -65,7 +65,7 @@ class Alumni {
   }
 
   static async delete(id) {
-    const query = "DELETE FROM alumnis WHERE id = ?";
+    const query = "DELETE FROM alumni WHERE id = ?";
     const result = await new Promise((resolve, reject) => {
       db.query(query, id, (err, results) => {
         if (err) {
@@ -79,7 +79,7 @@ class Alumni {
   }
 
   static async search(name) {
-    const query = "SELECT * FROM alumnis WHERE name LIKE ?";
+    const query = "SELECT * FROM alumni WHERE name LIKE ?";
     const results = await new Promise((resolve, reject) => {
       db.query(query, `%${name}%`, (err, results) => {
         if (err) {
@@ -93,7 +93,7 @@ class Alumni {
   }
 
   static async findByStatus(status) {
-    const query = "SELECT * FROM alumnis WHERE status = ?";
+    const query = "SELECT * FROM alumni WHERE status = ?";
     const results = await new Promise((resolve, reject) => {
       db.query(query, status, (err, results) => {
         if (err) {
